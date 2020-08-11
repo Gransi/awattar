@@ -28,6 +28,6 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
-    install_requires=['requests', 'datetime', 'dateutil'],
+    install_requires=['requests', 'datetime', 'python-dateutil'],
     python_requires='>=3.6'
 )
