@@ -18,7 +18,7 @@ This package is tested with Python 3.8.1
     client = AwattarClient('AT') # or DE for Germany
 
     print ('Get marketdata from API')
-    data =  client.get_data_24hours()
+    data =  client.request()
     
     for item in data:
         print(f'{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh')
@@ -56,7 +56,7 @@ Currently only Austria and Germany are supported
 
 Get current Market data
 ```python
-    data = client.get_data()
+    data = client.request()
 ```
 
 Get Market data from 2020-05-17
