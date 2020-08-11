@@ -70,4 +70,4 @@ Get Market data between 2020-05-18 and 2020-05-19
 ```
 
 # Source code
-The source code is currently available on Github:[https://github.com/Gransi/awattar](https://github.com/Gransi/awattar)
+The source code is currently available on Github: [https://github.com/Gransi/awattar](https://github.com/Gransi/awattar)

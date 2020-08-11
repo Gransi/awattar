@@ -1,4 +1,6 @@
 
+import sys
+
 import datetime
 from awattar import AwattarClient
 
