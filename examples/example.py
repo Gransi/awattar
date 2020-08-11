@@ -1,7 +1,4 @@
 
-import sys
-sys.path.insert(0, r'C:\Users\Peter\source\repos\Gransi\awattar')
-
 import datetime
 from awattar import AwattarClient
 
