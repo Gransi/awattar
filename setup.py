@@ -24,8 +24,10 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: OS Independent",
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
     install_requires=['requests', 'datetime', 'dateutil'],
+    python_requires='>=3.6'
 )
