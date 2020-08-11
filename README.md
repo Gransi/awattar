@@ -55,13 +55,11 @@ Currently only Austria and Germany are supported
 #### Get Market data
 
 Get current Market data
-
 ```python
     data = client.get_data()
 ```
 
 Get Market data from 2020-05-17
-
 ```python
     data = client.request(datetime.datetime(2020, 5, 17))
 ```
