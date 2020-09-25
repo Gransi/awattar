@@ -27,7 +27,7 @@ class AwattarClient(object):
 
         Returns
         -------
-        MarketItem
+        MarketItem:
             Returns list of MarketItem
 
         """                   
@@ -53,6 +53,65 @@ class AwattarClient(object):
         if req.status_code != requests.codes.ok: return None
 
         jsondata = req.json()
-        data = [MarketItem(**k) for k in jsondata["data"]]
+        self._data = [MarketItem(**k) for k in jsondata["data"]]
 
-        return data
+        return self._data
+
+    def min(self):
+        """
+        Get Market item with lowest price
+        
+        Returns
+        -------
+        MarketItem:
+            Returns MarketItem with lowest price 
+
+        """  
+
+        if not hasattr(self,'_data'):
+            self.request()
+
+        min_item = self._data[0]
+
+        for item in self._data:
+            if item.marketprice < min_item.marketprice:
+                min_item=item
+
+        return min_item
+
+    def max(self):
+        """
+        Get Market item with highest price
+        
+        Returns
+        -------
+        MarketItem:
+            Returns MarketItem with highest price 
+
+        """          
+        if not hasattr(self,'_data'):
+            self.request()
+
+        max_item = self._data[0]
+
+        for item in self._data:
+            if item.marketprice > max_item.marketprice:
+                max_item=item
+
+        return max_item        
+
+    def mean(self):
+        """
+        Get mean price of market 
+        
+        Returns
+        -------
+        float:    Returns mean price of market 
+
+        """         
+        if not hasattr(self,'_data'):
+            self.request()
+
+        return float((sum(a.marketprice for a in self._data))/len(self._data))
+
+                   
