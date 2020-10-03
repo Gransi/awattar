@@ -53,7 +53,7 @@ class AwattarClient(object):
         if req.status_code != requests.codes.ok: return None
 
         jsondata = req.json()
-        self._data = [MarketItem(**k) for k in jsondata["data"]]
+        self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
         return self._data
 
@@ -113,5 +113,3 @@ class AwattarClient(object):
             self.request()
 
         return float((sum(a.marketprice for a in self._data))/len(self._data))
-
-                   
