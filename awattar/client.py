@@ -1,5 +1,6 @@
 import requests
 import datetime
+import math
 
 from awattar.marketitem import MarketItem
 
@@ -113,3 +114,57 @@ class AwattarClient(object):
             self.request()
 
         return float((sum(a.marketprice for a in self._data))/len(self._data))
+
+    def best_slot(self, 
+                duration,
+                start_datetime,
+                end_datetime 
+                ):
+        """
+        Get the best slot.
+
+        Parameters
+        ----------
+        duration : int
+            Duration of usage[hour]
+        start_datetime : datetime
+            Start time
+        end_datetime : datetime
+            End time    
+
+        Returns
+        -------
+        int
+            Returns the best starting point
+
+        """
+        durationround = math.ceil(duration)
+        best_slot = None
+        start_index = None
+        start_mean_market_price = None
+        start_mean_datetime = None
+
+        start_datetime = start_datetime.replace(tzinfo=datetime.timezone.utc)
+        end_datetime = end_datetime.replace(tzinfo=datetime.timezone.utc)
+        datalenght = len(self._data) - (durationround - 1)
+
+        for i in range(0,datalenght):
+
+            item = self._data[i]
+            
+            if item.start_datetime >= start_datetime:
+
+                #get end
+                if i < datalenght-1 and self._data[i+durationround].end_datetime >= end_datetime:            
+                    break
+
+                sum_slot = 0
+                for x in range(0, durationround):
+                    sum_slot += self._data[i+x].marketprice
+
+                mean_slot_price = sum_slot / durationround
+
+                if best_slot is None or best_slot.marketprice > (mean_slot_price):
+                    best_slot = MarketItem(item.start_datetime, item.start_datetime + datetime .timedelta(hours=durationround),mean_slot_price, item.unit)
+
+        return best_slot        
