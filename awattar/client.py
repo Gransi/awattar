@@ -107,13 +107,16 @@ class AwattarClient(object):
         
         Returns
         -------
-        float:    Returns mean price of market 
+        MarketItem:    Returns mean price of market 
 
         """         
         if not hasattr(self,'_data'):
             self.request()
 
-        return float((sum(a.marketprice for a in self._data))/len(self._data))
+        mean_value = float((sum(a.marketprice for a in self._data))/len(self._data))
+        item = MarketItem(self._data[0].start_datetime,self._data[len(self._data)-1].end_datetime,mean_value, self._data[0].unit)
+
+        return item
 
     def best_slot(self, 
                 duration,
@@ -151,7 +154,7 @@ class AwattarClient(object):
         for i in range(0,datalenght):
 
             item = self._data[i]
-            
+
             if item.start_datetime >= start_datetime:
 
                 #get end
