@@ -69,5 +69,48 @@ Get Market data between 2020-05-18 and 2020-05-19
     data = client.request(datetime.datetime(2020, 5, 18), datetime.datetime(2020, 5, 19))
 ```
 
+#### Analysis Market data
+
+```python
+    print ('Connect to aWATTar')
+    client = AwattarClient('AT')
+
+    print ('Get Market data from API')
+    client.request()
+    
+    min_item = client.min()
+    print(f'Min: {min_item.start_datetime:%Y-%m-%d %H:%M:%S} - {min_item.end_datetime:%Y-%m-%d %H:%M:%S} - {(min_item.marketprice / 1000):.4f} EUR/kWh')
+
+    max_item = client.max()
+    print(f'Max: {max_item.start_datetime:%Y-%m-%d %H:%M:%S} - {max_item.end_datetime:%Y-%m-%d %H:%M:%S} - {(max_item.marketprice / 1000):.4f} EUR/kWh')
+
+    mean_item = client.mean()
+    print(f'Mean: {mean_item.start_datetime:%Y-%m-%d %H:%M:%S} - {mean_item.end_datetime:%Y-%m-%d %H:%M:%S} - {(mean_item.marketprice / 1000):.4f} EUR/kWh')
+
+
+    best_slot = client.best_slot(3)
+    if best_slot is None:
+        print("No slot found")
+    else:        
+        print(f'Best slot1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+
+    best_slot = client.best_slot(1,datetime.datetime(2020, 10, 5, 0, 0, 0),datetime.datetime(2020, 10, 6, 3, 0, 0))
+    if best_slot is None:
+        print("No slot found")
+    else:        
+        print(f'Best slot: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+```
+
+Output
+```
+Connect to aWATTar
+Get Market data from API
+Min: 2020-10-06 03:00:00 - 2020-10-06 04:00:00 - 0.0107 EUR/kWh
+Max: 2020-10-05 19:00:00 - 2020-10-05 20:00:00 - 0.0544 EUR/kWh
+Mean: 2020-10-05 17:00:00 - 2020-10-06 17:00:00 - 0.0349 EUR/kWh
+Best slot1: 2020-10-06 02:00:00 - 2020-10-06 05:00:00 - 0.0149 EUR/kWh
+Best slot: 2020-10-06 02:00:00 - 2020-10-06 03:00:00 - 0.0190 EUR/kWh
+```
+
 # Source code
 The source code is currently available on Github: [https://github.com/Gransi/awattar](https://github.com/Gransi/awattar)
