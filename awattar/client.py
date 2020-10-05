@@ -60,7 +60,7 @@ class AwattarClient(object):
 
     def min(self):
         """
-        Get Market item with lowest price
+        Get Market item with lowest price from last request
         
         Returns
         -------
@@ -68,9 +68,6 @@ class AwattarClient(object):
             Returns MarketItem with lowest price 
 
         """  
-
-        if not hasattr(self,'_data'):
-            self.request()
 
         min_item = self._data[0]
 
@@ -82,7 +79,7 @@ class AwattarClient(object):
 
     def max(self):
         """
-        Get Market item with highest price
+        Get Market item with highest price from last request
         
         Returns
         -------
@@ -103,15 +100,13 @@ class AwattarClient(object):
 
     def mean(self):
         """
-        Get mean price of market 
+        Get mean price of market of the last request
         
         Returns
         -------
         MarketItem:    Returns mean price of market 
 
         """         
-        if not hasattr(self,'_data'):
-            self.request()
 
         mean_value = float((sum(a.marketprice for a in self._data))/len(self._data))
         item = MarketItem(self._data[0].start_datetime,self._data[len(self._data)-1].end_datetime,mean_value, self._data[0].unit)
@@ -120,8 +115,8 @@ class AwattarClient(object):
 
     def best_slot(self, 
                 duration,
-                start_datetime,
-                end_datetime 
+                start_datetime = None,
+                end_datetime = None
                 ):
         """
         Get the best slot.
@@ -147,18 +142,22 @@ class AwattarClient(object):
         start_mean_market_price = None
         start_mean_datetime = None
 
-        start_datetime = start_datetime.replace(tzinfo=datetime.timezone.utc)
-        end_datetime = end_datetime.replace(tzinfo=datetime.timezone.utc)
+        if start_datetime is not None:
+            start_datetime = start_datetime.replace(tzinfo=datetime.timezone.utc)
+
+        if end_datetime is not None:
+            end_datetime = end_datetime.replace(tzinfo=datetime.timezone.utc)
+
         datalenght = len(self._data) - (durationround - 1)
 
         for i in range(0,datalenght):
 
             item = self._data[i]
 
-            if item.start_datetime >= start_datetime:
+            if start_datetime is None or item.start_datetime >= start_datetime:
 
                 #get end
-                if i < datalenght-1 and self._data[i+durationround].end_datetime >= end_datetime:            
+                if i < datalenght-1 and end_datetime is not None and self._data[i+durationround].end_datetime >= end_datetime:            
                     break
 
                 sum_slot = 0
