@@ -69,7 +69,7 @@ Get Market data between 2020-05-18 and 2020-05-19
     data = client.request(datetime.datetime(2020, 5, 18), datetime.datetime(2020, 5, 19))
 ```
 
-#### Analysis Market data
+#### Analyse Market data
 
 ```python
     print ('Connect to aWATTar')
