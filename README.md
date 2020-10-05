@@ -92,13 +92,13 @@ Get Market data between 2020-05-18 and 2020-05-19
     if best_slot is None:
         print("No slot found")
     else:        
-        print(f'Best slot1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+        print(f'Best slot 1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
 
     best_slot = client.best_slot(1,datetime.datetime(2020, 10, 5, 0, 0, 0),datetime.datetime(2020, 10, 6, 3, 0, 0))
     if best_slot is None:
         print("No slot found")
     else:        
-        print(f'Best slot: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+        print(f'Best slot 2: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
 ```
 
 Output
@@ -108,8 +108,8 @@ Get Market data from API
 Min: 2020-10-06 03:00:00 - 2020-10-06 04:00:00 - 0.0107 EUR/kWh
 Max: 2020-10-05 19:00:00 - 2020-10-05 20:00:00 - 0.0544 EUR/kWh
 Mean: 2020-10-05 17:00:00 - 2020-10-06 17:00:00 - 0.0349 EUR/kWh
-Best slot1: 2020-10-06 02:00:00 - 2020-10-06 05:00:00 - 0.0149 EUR/kWh
-Best slot: 2020-10-06 02:00:00 - 2020-10-06 03:00:00 - 0.0190 EUR/kWh
+Best slot 1: 2020-10-06 02:00:00 - 2020-10-06 05:00:00 - 0.0149 EUR/kWh
+Best slot 2: 2020-10-06 02:00:00 - 2020-10-06 03:00:00 - 0.0190 EUR/kWh
 ```
 
 # Source code
