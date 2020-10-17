@@ -142,10 +142,14 @@ class AwattarClient(object):
         start_mean_market_price = None
         start_mean_datetime = None
 
+        #clean up start_datetime
         if start_datetime is not None:
+            start_datetime = start_datetime.replace(minute=0, second=0,microsecond=0)
             start_datetime = start_datetime.replace(tzinfo=datetime.timezone.utc)
 
+        #clean up end_datetime
         if end_datetime is not None:
+            end_datetime = end_datetime.replace(minute=0, second=0,microsecond=0)
             end_datetime = end_datetime.replace(tzinfo=datetime.timezone.utc)
 
         datalenght = len(self._data) - (durationround - 1)

@@ -1,6 +1,7 @@
 import sys
 
 import datetime
+from datetime import timedelta
 import statistics 
 import numpy
 sys.path.append("..")
@@ -30,12 +31,23 @@ def main(argv):
     else:        
         print(f'Best slot1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
 
-    best_slot = client.best_slot(1,datetime.datetime(2020, 10, 5, 0, 0, 0),datetime.datetime(2020, 10, 6, 3, 0, 0))
+    best_slot = client.best_slot(1,datetime.datetime(2020, 10, 17, 12, 0, 0),datetime.datetime(2020, 10, 17, 18, 0, 0))
     if best_slot is None:
         print("No slot found")
     else:        
-        print(f'Best slot: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+        print(f'Best slot2: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
 
+    starttime_slot = datetime.datetime.now()
+    starttime_slot = starttime_slot.replace(hour=12)	
+    endtime_slot = starttime_slot + timedelta(hours=6)
+
+    best_slot = client.best_slot(1,starttime_slot,endtime_slot)
+    if best_slot is None:
+        print("No slot found")
+    else:        
+        print(f'Best slot3: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh')
+
+ 
 
     #print ('Get Market data from API')
     #data = client.request()
