@@ -13,7 +13,10 @@ def main(argv):
     client = AwattarClient('AT')
 
     print ('Get Market data from API')
-    client.request()
+    data = client.request()
+    for item in data:
+        print(f'{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh {type(item.marketprice)}')            
+
     
     min_item = client.min()
     print(f'Min: {min_item.start_datetime:%Y-%m-%d %H:%M:%S} - {min_item.end_datetime:%Y-%m-%d %H:%M:%S} - {(min_item.marketprice / 1000):.4f} EUR/kWh')
