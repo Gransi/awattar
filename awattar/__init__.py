@@ -3,6 +3,7 @@
 
 from .client import AwattarClient
 from .marketitem import MarketItem
+from .cli import cli as _cli    # for CLI entry only
 
 __all__ = [
     'AwattarClient'

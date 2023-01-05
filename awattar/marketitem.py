@@ -18,6 +18,17 @@ class MarketItem(object):
         self._marketprice = float(marketprice)
         self._unit = unit
 
+    def to_json_dict(self):
+        return {
+                "start": self.start_datetime.isoformat(),
+                "end": self.end_datetime.isoformat(),
+                "price": self.marketprice,
+                "unit": self.unit,
+                "currency": self.currency,
+                "energy_unit": self.energy_unit,
+                "price_per_kWh": self.price_per_kWh
+            }
+
     @classmethod
     def by_timestamp(cls,
                  start_timestamp : datetime,
@@ -66,4 +77,4 @@ class MarketItem(object):
 
     @property
     def unit(self):
-        return self._unit;        
+        return self._unit;
