@@ -1,6 +1,6 @@
+import dataclasses
 import datetime
 import json
-import dataclasses
 from typing import Optional
 
 import click
@@ -28,21 +28,53 @@ def cli(ctx, country):
 
 
 @cli.command
-@click.pass_obj
 @click.option("--start", type=click.DateTime(), default=None)
 @click.option("--end", type=click.DateTime(), default=None)
-@click.option("--year", type=click.DateTime(["%Y"]), default=None, help="the year for which to fetch the data")
-def fetch(obj: CliContext, start: Optional[datetime.datetime], end: Optional[datetime.datetime], year: Optional[datetime.datetime]):
+@click.option(
+    "--year",
+    type=click.DateTime(["%Y"]),
+    default=None,
+    help="the year for which to fetch the data",
+)
+@click.option(
+    "--month",
+    type=click.DateTime(["%Y-%m"]),
+    default=None,
+    help="the year and month for which to fetch the data",
+)
+def fetch(
+    start: Optional[datetime.datetime],
+    end: Optional[datetime.datetime],
+    year: Optional[datetime.datetime],
+    month: Optional[datetime.datetime],
+):
     """Fetch hourly energy prices"""
     today = datetime.date.today()
-    if not start:
-        start = datetime.datetime.combine(
-            today if not year else year, datetime.time.min, tz.tzlocal()
-        )
-    if not end:
-        if not year :
+    if month:
+        items = _get_for_month(month.astimezone(tz.tzlocal()))
+    elif year:
+        items = _get_for_year(year.astimezone(tz.tzlocal()))
+    else:
+        if not start:
+            start = datetime.datetime.combine(today, datetime.time.min, tz.tzlocal())
+        if not end:
             end = start + datetime.timedelta(1)
-        else:
-            end = start.replace(year=start.year + 1)
-    items = obj.client.request(start, end)
+        items = _get_for_period(start, end)
     print(json.dumps([item.to_json_dict() for item in items], indent=4))
+
+
+def _get_for_period(start: datetime.datetime, end: datetime.datetime):
+    return (
+        click.get_current_context().find_object(CliContext).client.request(start, end)
+    )
+
+
+def _get_for_year(year: datetime.datetime):
+    return _get_for_period(year, year.replace(year=year.year + 1))
+
+
+def _get_for_month(month: datetime.datetime):
+    try:
+        return _get_for_period(month, month.replace(month=month.month + 1))
+    except ValueError:
+        return _get_for_period(month, month.replace(year=month.year + 1, month=1))
