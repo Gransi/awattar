@@ -42,19 +42,28 @@ def cli(ctx, country):
     default=None,
     help="the year and month for which to fetch the data",
 )
+@click.option(
+    "--day",
+    type=click.DateTime(["%Y-%m-%d"]),
+    default=None,
+    help="the year, month, and day for which to fetch the data",
+)
 def fetch(
     start: Optional[datetime.datetime],
     end: Optional[datetime.datetime],
     year: Optional[datetime.datetime],
     month: Optional[datetime.datetime],
+    day: Optional[datetime.datetime],
 ):
     """Fetch hourly energy prices"""
-    today = datetime.date.today()
-    if month:
+    if day:
+        items = _get_for_day(day.astimezone(tz.tzlocal()))
+    elif month:
         items = _get_for_month(month.astimezone(tz.tzlocal()))
     elif year:
         items = _get_for_year(year.astimezone(tz.tzlocal()))
     else:
+        today = datetime.date.today()
         if not start:
             start = datetime.datetime.combine(today, datetime.time.min, tz.tzlocal())
         if not end:
@@ -78,3 +87,7 @@ def _get_for_month(month: datetime.datetime):
         return _get_for_period(month, month.replace(month=month.month + 1))
     except ValueError:
         return _get_for_period(month, month.replace(year=month.year + 1, month=1))
+
+
+def _get_for_day(day: datetime.datetime):
+    return _get_for_period(day, day + datetime.timedelta(1))
