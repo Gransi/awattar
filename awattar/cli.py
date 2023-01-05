@@ -1,5 +1,6 @@
 import datetime
 import json
+import dataclasses
 
 import click
 from dateutil import tz
@@ -7,14 +8,28 @@ from dateutil import tz
 from awattar.client import AwattarClient
 
 
+@dataclasses.dataclass
+class CliContext:
+    client: AwattarClient
+
+
 @click.group
-def cli():
-    pass
+@click.pass_context
+@click.option(
+    "--country",
+    type=click.Choice(["DE", "AT"]),
+    default="DE",
+    help="the API's target country (either Germany or Austria), default: DE",
+)
+def cli(ctx, country):
+    """Access aWATTar's energy prices API."""
+    ctx.obj = CliContext(AwattarClient(country=country))
 
 
 @cli.command
-def fetch():
-    """Fetch hourly energy prices for Germany provided via aWATTar's API."""
+@click.pass_obj
+def fetch(obj: CliContext):
+    """Fetch hourly energy prices"""
     today = datetime.date.today()
     start: datetime.datetime = datetime.datetime.combine(
         today, datetime.time.min, tz.tzlocal()
@@ -22,8 +37,7 @@ def fetch():
     end: datetime.datetime = datetime.timedelta(1) + start
     print(start)
     print(end)
-    client = AwattarClient("DE")
-    items = client.request(start, end)
+    items = obj.client.request(start, end)
     item = items[0]
     print(item)
     print(json.dumps([item.to_json_dict() for item in items], indent=4))
