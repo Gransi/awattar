@@ -31,14 +31,18 @@ def cli(ctx, country):
 @click.pass_obj
 @click.option("--start", type=click.DateTime(), default=None)
 @click.option("--end", type=click.DateTime(), default=None)
-def fetch(obj: CliContext, start: Optional[datetime.datetime], end: Optional[datetime.datetime]):
+@click.option("--year", type=click.DateTime(["%Y"]), default=None, help="the year for which to fetch the data")
+def fetch(obj: CliContext, start: Optional[datetime.datetime], end: Optional[datetime.datetime], year: Optional[datetime.datetime]):
     """Fetch hourly energy prices"""
     today = datetime.date.today()
     if not start:
         start = datetime.datetime.combine(
-            today, datetime.time.min, tz.tzlocal()
+            today if not year else year, datetime.time.min, tz.tzlocal()
         )
     if not end:
-        end = datetime.timedelta(1) + start
+        if not year :
+            end = start + datetime.timedelta(1)
+        else:
+            end = start.replace(year=start.year + 1)
     items = obj.client.request(start, end)
     print(json.dumps([item.to_json_dict() for item in items], indent=4))
