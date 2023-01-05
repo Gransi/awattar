@@ -78,3 +78,28 @@ class MarketItem(object):
     @property
     def unit(self):
         return self._unit;
+
+    @property
+    def price_per_kWh(self):
+        try:
+            return self._price_per_kWh
+        except AttributeError:
+            assert self.energy_unit.startswith("M")
+            self._price_per_kWh = self.marketprice / 1000
+        return self._price_per_kWh
+
+    @property
+    def currency(self):
+        try:
+            return self._currency
+        except AttributeError:
+            self._currency = self.unit.split("/")[0]
+        return self._currency
+
+    @property
+    def energy_unit(self):
+        try:
+            return self._energy_unit
+        except AttributeError:
+            self._energy_unit = self.unit.split("/")[1]
+        return self._energy_unit
