@@ -35,9 +35,5 @@ def fetch(obj: CliContext):
         today, datetime.time.min, tz.tzlocal()
     )
     end: datetime.datetime = datetime.timedelta(1) + start
-    print(start)
-    print(end)
     items = obj.client.request(start, end)
-    item = items[0]
-    print(item)
     print(json.dumps([item.to_json_dict() for item in items], indent=4))
