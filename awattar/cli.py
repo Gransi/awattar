@@ -49,7 +49,7 @@ def cli(ctx, country):
     default=None,
     help="the year, month, and day for which to fetch the data",
 )
-@click.option("--format",type=click.Choice(["json", "csv"]), default="json")
+@click.option("--format", type=click.Choice(["json", "csv"]), default="json")
 @click.argument("FILE", type=click.File(mode="w"), default="-")
 def fetch(
     start: Optional[datetime.datetime],
@@ -79,7 +79,9 @@ def fetch(
         file.write(json.dumps(out_items, indent=4))
     else:
         # default lineterminator led to duplicate newlines in file when running from git bash on Windows
-        writer = csv.DictWriter(file, out_items[0].keys(), lineterminator="\n", dialect="excel-tab")
+        writer = csv.DictWriter(
+            file, out_items[0].keys(), lineterminator="\n", dialect="excel-tab"
+        )
         writer.writeheader()
         writer.writerows(out_items)
 
