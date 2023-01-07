@@ -1,3 +1,4 @@
+import csv
 import dataclasses
 import datetime
 import json
@@ -48,12 +49,16 @@ def cli(ctx, country):
     default=None,
     help="the year, month, and day for which to fetch the data",
 )
+@click.option("--format",type=click.Choice(["json", "csv"]), default="json")
+@click.argument("FILE", type=click.File(mode="w"), default="-")
 def fetch(
     start: Optional[datetime.datetime],
     end: Optional[datetime.datetime],
     year: Optional[datetime.datetime],
     month: Optional[datetime.datetime],
     day: Optional[datetime.datetime],
+    format: str,
+    file: click.File,
 ):
     """Fetch hourly energy prices"""
     if day:
@@ -69,7 +74,14 @@ def fetch(
         if not end:
             end = start + datetime.timedelta(1)
         items = _get_for_period(start, end)
-    print(json.dumps([item.to_json_dict() for item in items], indent=4))
+    out_items = [item.to_json_dict() for item in items]
+    if format == "json":
+        file.write(json.dumps(out_items, indent=4))
+    else:
+        # default lineterminator led to duplicate newlines in file when running from git bash on Windows
+        writer = csv.DictWriter(file, out_items[0].keys(), lineterminator="\n", dialect="excel-tab")
+        writer.writeheader()
+        writer.writerows(out_items)
 
 
 def _get_for_period(start: datetime.datetime, end: datetime.datetime):
