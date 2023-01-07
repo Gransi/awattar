@@ -55,7 +55,7 @@ def cli(ctx, country):
     default="json-pretty",
 )
 @click.argument("FILE", type=click.File(mode="w"), default="-")
-def fetch(
+def fetch_prices(
     start: Optional[datetime.datetime],
     end: Optional[datetime.datetime],
     year: Optional[datetime.datetime],
