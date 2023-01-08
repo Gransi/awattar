@@ -54,6 +54,8 @@ def cli(ctx, country):
     type=click.Choice(["json", "json-pretty", "csv", "csv-pretty"]),
     default="json-pretty",
 )
+@click.option("--today", is_flag=True, default=False)
+@click.option("--tomorrow", is_flag=True, default=False)
 @click.argument("FILE", type=click.File(mode="w"), default="-")
 def fetch_prices(
     start: Optional[datetime.datetime],
@@ -61,6 +63,8 @@ def fetch_prices(
     year: Optional[datetime.datetime],
     month: Optional[datetime.datetime],
     day: Optional[datetime.datetime],
+    today: bool,
+    tomorrow: bool,
     format: str,
     file: click.File,
 ):
@@ -71,10 +75,16 @@ def fetch_prices(
         items = _get_for_month(month.astimezone(tz.tzlocal()))
     elif year:
         items = _get_for_year(year.astimezone(tz.tzlocal()))
+    elif today:
+        date = datetime.datetime.combine(datetime.date.today(), datetime.time.min, tz.tzlocal())
+        items = _get_for_day(date)
+    elif tomorrow:
+        date = datetime.date.today() + datetime.timedelta(1)
+        date = datetime.datetime.combine(date, datetime.time.min, tz.tzlocal())
+        items = _get_for_day(date)
     else:
-        today = datetime.date.today()
         if not start:
-            start = datetime.datetime.combine(today, datetime.time.min, tz.tzlocal())
+            start = datetime.datetime.combine(datetime.date.today(), datetime.time.min, tz.tzlocal())
         if not end:
             end = start + datetime.timedelta(1)
         items = _get_for_period(start, end)
