@@ -93,7 +93,10 @@ def fetch_prices(
         dialect = "excel-tab" if "pretty" in format else "excel"
         # default lineterminator led to duplicate newlines in file when running from git bash on Windows
         writer = csv.DictWriter(
-            file, out_items[0].keys(), lineterminator="\n", dialect=dialect
+            file,
+            out_items[0].keys() if out_items else [],
+            lineterminator="\n",
+            dialect=dialect,
         )
         writer.writeheader()
         writer.writerows(out_items)
