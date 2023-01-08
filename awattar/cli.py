@@ -79,7 +79,16 @@ def fetch_prices(
         raise click.UsageError(
             "--start and --end parameters are mutually exclusiv with any of --day, --month, --year, --today, and --tomorrow."
         )
-
+    # The API allows supplying a value for end without one for start as well as
+    # an end date earlier than start date, and returns default data (current
+    # day UTC) in these cases. However, this is not really intuitive and should
+    # probably better be prevented in the first place.
+    if not start and end:
+        raise click.BadOptionUsage("--end", "--end cannot be supplied without --start")
+    if start and end and not (start < end):
+        raise click.BadParameter(
+            "--start not earlier than --end", param_hint=["--start", "--end"]
+        )
     # fetch data
     if day:
         items = _get_for_day(day.astimezone(tz.tzlocal()))
