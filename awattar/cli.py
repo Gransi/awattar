@@ -2,6 +2,7 @@ import csv
 import dataclasses
 import datetime
 import json
+import sys
 from typing import Optional
 
 import click
@@ -107,6 +108,11 @@ def fetch_prices(
         items = _get_for_day(date)
     else:
         items = _get_for_period(start, end)
+
+    # make sure we got some data from the API
+    if not items:
+        click.echo("Error when fetching data: no data received", sys.stderr)
+        raise click.Abort()
 
     # write data to the provided file (or print to stdout)
     out_items = [item.to_json_dict() for item in items]
