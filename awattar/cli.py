@@ -83,10 +83,6 @@ def fetch_prices(
         date = datetime.datetime.combine(date, datetime.time.min, tz.tzlocal())
         items = _get_for_day(date)
     else:
-        if not start:
-            start = datetime.datetime.combine(datetime.date.today(), datetime.time.min, tz.tzlocal())
-        if not end:
-            end = start + datetime.timedelta(1)
         items = _get_for_period(start, end)
     out_items = [item.to_json_dict() for item in items]
     if format == "json":
