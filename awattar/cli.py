@@ -69,6 +69,18 @@ def fetch_prices(
     file: click.File,
 ):
     """Fetch hourly energy prices"""
+    # validate parameter combination
+    single = list(map(bool, [day, month, year, today, tomorrow]))
+    if sum(single) > 1:
+        raise click.UsageError(
+            "--day, --month, --year, --today, and --tomorrow are mutually exclusive parameters. Please specify at most one of them."
+        )
+    if any(single) and (start or end):
+        raise click.UsageError(
+            "--start and --end parameters are mutually exclusiv with any of --day, --month, --year, --today, and --tomorrow."
+        )
+
+    # fetch data
     if day:
         items = _get_for_day(day.astimezone(tz.tzlocal()))
     elif month:
