@@ -13,6 +13,8 @@ from awattar.client import AwattarClient
 
 @dataclasses.dataclass
 class CliContext:
+    """Used as click's context object"""
+
     client: AwattarClient
 
 
@@ -30,33 +32,33 @@ def cli(ctx, country):
 
 
 @cli.command
-@click.option("--start", type=click.DateTime(), default=None)
-@click.option("--end", type=click.DateTime(), default=None)
+@click.option("--start", type=click.DateTime(), default=None, help="the start date in local time of the interval for which to fetch the prices")
+@click.option("--end", type=click.DateTime(), default=None, help="the end date in local time of the interval for which to fetch the prices")
 @click.option(
     "--year",
     type=click.DateTime(["%Y"]),
     default=None,
-    help="the year for which to fetch the data",
+    help="year in local time for which to fetch the prices",
 )
 @click.option(
     "--month",
     type=click.DateTime(["%Y-%m"]),
     default=None,
-    help="the year and month for which to fetch the data",
+    help="year and month in local time for which to fetch the prices",
 )
 @click.option(
     "--day",
     type=click.DateTime(["%Y-%m-%d"]),
     default=None,
-    help="the year, month, and day for which to fetch the data",
+    help="year, month, and day in local time for which to fetch the prices",
 )
 @click.option(
     "--format",
     type=click.Choice(["json", "json-pretty", "csv", "csv-pretty"]),
     default="json-pretty",
 )
-@click.option("--today", is_flag=True, default=False)
-@click.option("--tomorrow", is_flag=True, default=False)
+@click.option("--today", is_flag=True, default=False, help="fetch today's (local time) prices")
+@click.option("--tomorrow", is_flag=True, default=False, help="fetch tomorrow's (local time) prices (will only work after they've been published at 12:55 GMT")
 @click.argument("FILE", type=click.File(mode="w"), default="-")
 def fetch_prices(
     start: Optional[datetime.datetime],
@@ -90,6 +92,7 @@ def fetch_prices(
         raise click.BadParameter(
             "--start not earlier than --end", param_hint=["--start", "--end"]
         )
+
     # fetch data
     if day:
         items = _get_for_day(day.astimezone(tz.tzlocal()))
