@@ -98,6 +98,8 @@ def fetch_prices(
         items = _get_for_day(date)
     else:
         items = _get_for_period(start, end)
+
+    # write data to the provided file (or print to stdout)
     out_items = [item.to_json_dict() for item in items]
     if format == "json":
         file.write(json.dumps(out_items))
