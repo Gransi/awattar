@@ -76,7 +76,9 @@ def fetch_prices(
     elif year:
         items = _get_for_year(year.astimezone(tz.tzlocal()))
     elif today:
-        date = datetime.datetime.combine(datetime.date.today(), datetime.time.min, tz.tzlocal())
+        date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time.min, tz.tzlocal()
+        )
         items = _get_for_day(date)
     elif tomorrow:
         date = datetime.date.today() + datetime.timedelta(1)
