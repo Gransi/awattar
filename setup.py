@@ -28,6 +28,11 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
-    install_requires=['requests', 'datetime', 'python-dateutil'],
-    python_requires='>=3.6'
-)
+    install_requires=['requests', 'datetime', 'python-dateutil', 'click'],
+    python_requires='>=3.6',
+    entry_points={
+            'console_scripts': [
+                'awattar = awattar:_cli',
+            ]
+    },
+    )
