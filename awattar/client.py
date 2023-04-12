@@ -36,9 +36,15 @@ class AwattarClient(object):
         #set params
         params = ''
         if start_time != None:
+            #remove microseconds
+            start_time = start_time.replace(microsecond=0)
+
             params = '?start=' + str(int(start_time.timestamp())) + '000'
 
             if end_time != None:
+                #remove microseconds
+                end_time = end_time.replace(microsecond=0)
+
                 #set end timestamp
                 params = params + '&end=' + str(int(end_time.timestamp())) + '000'
 
@@ -144,12 +150,12 @@ class AwattarClient(object):
 
         #clean up start_datetime
         if start_datetime is not None:
-            start_datetime = start_datetime.replace(minute=0, second=0,microsecond=0)
+            start_datetime = start_datetime.replace(minute=0, second=0)
             start_datetime = start_datetime.replace(tzinfo=datetime.timezone.utc)
 
         #clean up end_datetime
         if end_datetime is not None:
-            end_datetime = end_datetime.replace(minute=0, second=0,microsecond=0)
+            end_datetime = end_datetime.replace(minute=0, second=0)
             end_datetime = end_datetime.replace(tzinfo=datetime.timezone.utc)
 
         datalenght = len(self._data) - (durationround - 1)
@@ -173,4 +179,39 @@ class AwattarClient(object):
                 if best_slot is None or best_slot.marketprice > (mean_slot_price):
                     best_slot = MarketItem(item.start_datetime, item.start_datetime + datetime .timedelta(hours=durationround),mean_slot_price, item.unit)
 
-        return best_slot        
+        return best_slot
+
+    def today(self):
+        """
+        Get Market data for today
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+       	starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=0, minute=0, second=0)		
+        endtime = starttime.replace(hour=23, minute=0, second=0)
+
+        return self.request(starttime, endtime)
+    
+    def tomorrow(self):
+        """
+        Get Market data for tomorrow
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+       	starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=23, minute=00, second=00) 
+        endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
+
+        return self.request(starttime, endtime)
+        
