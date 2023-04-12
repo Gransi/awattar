@@ -23,8 +23,8 @@ class CliContext:
 @click.option(
     "--country",
     type=click.Choice(["DE", "AT"]),
-    default="DE",
-    help="the API's target country (either Germany or Austria), default: DE",
+    default="AT",
+    help="the API's target country (either Germany or Austria), default: AT",
 )
 def cli(ctx, country):
     """Access aWATTar's energy prices API."""
