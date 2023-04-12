@@ -1,18 +1,54 @@
 # awattar
 
-
-
-###  Installation
+##  Installation
 
 ```sh
 $ pip install awattar
 ```
 
-This package is tested with Python 3.8.1 
+This package is tested with Python 3.10 
 
-###  Examples
+## Command line
+
+Use the command `awattar --help` and `awattar fetch-prices --help` to get more information.
+
+```shell
+$ awattar --help
+Usage: awattar [OPTIONS] COMMAND [ARGS]...
+
+  Access aWATTar's energy prices API.
+
+Options:
+  --country [DE|AT]  the API's target country (either Germany or Austria),
+                     default: AT
+  --help             Show this message and exit.
+
+Commands:
+  fetch-prices  Fetch hourly energy prices
+```
+
+### Command line example
+
+```shell
+$  awattar --country AT fetch-prices --day 2023-02-20
+[
+    {
+        "start": "2023-02-20T00:00:00+01:00",
+        "end": "2023-02-20T01:00:00+01:00",
+        "price": 85.96,
+        "unit": "Eur/MWh",
+        "currency": "Eur",
+        "energy_unit": "MWh",
+        "price_per_kWh": 0.08596
+    },
+    ...
+]
+```
+
+##  Examples
 
 ```python
+    from awattar.client import AwattarClient
 
     print ('Connect to aWATTar')
     client = AwattarClient('AT') # or DE for Germany
@@ -42,9 +78,9 @@ Get marketdata from API
 2020-08-11 23:00:00 - 2020-08-12 00:00:00 - 0.0309 EUR/kWh
 ```
 
-###  Usage
+##  Usage
 
-#### Initialize Awattar Client
+### Initialize Awattar Client
 
 Currently only Austria and Germany are supported
 
@@ -52,7 +88,7 @@ Currently only Austria and Germany are supported
     client = AwattarClient('AT') # or DE for Germany
 ```
 
-#### Get Market data
+### Get Market data
 
 Get current Market data
 ```python
@@ -69,7 +105,7 @@ Get Market data between 2020-05-18 and 2020-05-19
     data = client.request(datetime.datetime(2020, 5, 18), datetime.datetime(2020, 5, 19))
 ```
 
-#### Analyse Market data
+### Analyse Market data
 
 ```python
     print ('Connect to aWATTar')
