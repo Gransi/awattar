@@ -1,6 +1,7 @@
 import requests
 import datetime
 import math
+import aiohttp
 
 from awattar.marketitem import MarketItem
 
@@ -11,28 +12,9 @@ class AwattarClient(object):
         """Construct a new AwattarClient object."""
 
         self._country = country 
+        self._data = []
 
-    def request(self,
-                start_time = None,
-                end_time = None
-                ):
-        """
-        Get Market data between start time and end time
-
-        Parameters
-        ----------
-        start_time : datetime
-            Start time
-        end_time : datetime
-            End time            
-
-        Returns
-        -------
-        MarketItem:
-            Returns list of MarketItem
-
-        """                   
-
+    def _make_url(self, start_time, end_time):
         #set params
         params = ''
         if start_time != None:
@@ -54,13 +36,40 @@ class AwattarClient(object):
         elif self._country == 'DE':
             url = 'https://api.awattar.de/v1/marketdata' + params
 
+        return url
+
+    def _set_data (self, jsondata):
+        self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
+
+    def request(self,
+                start_time = None,
+                end_time = None
+                ):
+        """
+        Get Market data between start time and end time
+
+        Parameters
+        ----------
+        start_time : datetime
+            Start time
+        end_time : datetime
+            End time            
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """                   
+        
         #send request
-        req = requests.get(url)
+        req = requests.get(self._make_url(start_time, end_time))
 
         if req.status_code != requests.codes.ok: return None
 
         jsondata = req.json()
-        self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
+
+        self._set_data(jsondata)
 
         return self._data
 
@@ -93,8 +102,6 @@ class AwattarClient(object):
             Returns MarketItem with highest price 
 
         """          
-        if not hasattr(self,'_data'):
-            self.request()
 
         max_item = self._data[0]
 
@@ -192,7 +199,7 @@ class AwattarClient(object):
 
         """
 
-       	starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
         starttime = starttime.replace(hour=0, minute=0, second=0)		
         endtime = starttime.replace(hour=23, minute=0, second=0)
 
@@ -209,9 +216,74 @@ class AwattarClient(object):
 
         """
 
-       	starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
         starttime = starttime.replace(hour=23, minute=00, second=00) 
         endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
 
         return self.request(starttime, endtime)
         
+class AsyncAwattarClient(AwattarClient):
+    async def request(self,
+                start_time = None,
+                end_time = None
+                ):
+        """
+        Get Market data between start time and end time async
+
+        Parameters
+        ----------
+        start_time : datetime
+            Start time
+        end_time : datetime
+            End time            
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """                   
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self._make_url(start_time, end_time)) as response:
+                if response.status != 200: return None
+                
+                jsondata = await response.json()
+
+                self._set_data(jsondata)
+
+        return self._data
+
+    async def today(self):
+        """
+        Get Market data for today
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=0, minute=0, second=0)		
+        endtime = starttime.replace(hour=23, minute=0, second=0)
+
+        return await self.request(starttime, endtime)
+    
+    async def tomorrow(self):
+        """
+        Get Market data for tomorrow
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=23, minute=00, second=00) 
+        endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
+
+        return await self.request(starttime, endtime)

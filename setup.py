@@ -29,7 +29,7 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
-    install_requires=['requests', 'datetime', 'python-dateutil', 'click'],
+    install_requires=['requests', 'datetime', 'python-dateutil', 'click', 'aiohttp'],
     python_requires='>=3.6',
     entry_points={
             'console_scripts': [
