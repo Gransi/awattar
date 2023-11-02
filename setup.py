@@ -23,14 +23,13 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: OS Independent",
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.10',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
     install_requires=['requests', 'datetime', 'python-dateutil', 'click'],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     entry_points={
             'console_scripts': [
                 'awattar = awattar:_cli',
