@@ -28,7 +28,7 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',        
     ],
-    install_requires=['requests', 'datetime', 'python-dateutil', 'click'],
+    install_requires=['requests', 'datetime', 'python-dateutil', 'click>=8.1.7'],
     python_requires='>=3.8',
     entry_points={
             'console_scripts': [
