@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools_scm[toml]>=7.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "awattar"
+description = "aWATTar Client to analyse the energy market data"
+authors = [{ name = "Peter Gransdorfer", email = "peter.gransdorfer@cattronix.com" }]
+license = { text = "GPL-3.0" }
+classifiers = [
+    'Development Status :: 4 - Beta',
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Operating System :: OS Independent",
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Python Modules',   
+]
+keywords = ["awattar", "energy market price api"]
+requires-python = ">=3.8"
+dependencies = [
+    "requests", 
+    "datetime", 
+    "python-dateutil",
+    "click>=8.1.7"
+]
+dynamic = ["version"]
+
+[project.scripts]
+awattar = "awattar:_cli"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/Gransi/awattar"
+Download = "https://github.com/Gransi/awattar"
+Tracker = "https://github.com/Gransi/awattar/issues"
+Source = "https://github.com/Gransi/awattar"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages]
+find = { namespaces = false }
+
+[tool.setuptools_scm]
+
