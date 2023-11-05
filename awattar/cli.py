@@ -3,6 +3,7 @@ import dataclasses
 import datetime
 import json
 import sys
+import pkg_resources
 from typing import Optional
 
 import click
@@ -155,3 +156,8 @@ def _get_for_month(month: datetime.datetime):
 
 def _get_for_day(day: datetime.datetime):
     return _get_for_period(day, day + datetime.timedelta(1))
+
+@cli.command
+def version():
+    """Show package version"""
+    click.echo('Version: ' + pkg_resources.get_distribution('awattar').version)
