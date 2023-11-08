@@ -3,7 +3,7 @@ import dataclasses
 import datetime
 import json
 import sys
-import pkg_resources
+import importlib.metadata
 from typing import Optional
 
 import click
@@ -160,4 +160,4 @@ def _get_for_day(day: datetime.datetime):
 @cli.command
 def version():
     """Show package version"""
-    click.echo('Version: ' + pkg_resources.get_distribution('awattar').version)
+    click.echo('Version: ' + importlib.metadata.version('awattar'))
