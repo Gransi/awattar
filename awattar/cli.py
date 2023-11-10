@@ -1,9 +1,9 @@
 import csv
 import dataclasses
 import datetime
+import importlib.metadata
 import json
 import sys
-import importlib.metadata
 from typing import Optional
 
 import click
@@ -27,7 +27,7 @@ class CliContext:
     default="AT",
     help="the API's target country (either Germany or Austria), default: AT",
 )
-def cli(ctx, country):
+def cli(ctx, country: str) -> None:
     """Access aWATTar's energy prices API."""
     ctx.obj = CliContext(AwattarClient(country=country))
 
@@ -76,13 +76,9 @@ def fetch_prices(
     # validate parameter combination
     single = list(map(bool, [day, month, year, today, tomorrow]))
     if sum(single) > 1:
-        raise click.UsageError(
-            "--day, --month, --year, --today, and --tomorrow are mutually exclusive parameters. Please specify at most one of them."
-        )
+        raise click.UsageError("--day, --month, --year, --today, and --tomorrow are mutually exclusive parameters. Please specify at most one of them.")
     if any(single) and (start or end):
-        raise click.UsageError(
-            "--start and --end parameters are mutually exclusiv with any of --day, --month, --year, --today, and --tomorrow."
-        )
+        raise click.UsageError("--start and --end parameters are mutually exclusiv with any of --day, --month, --year, --today, and --tomorrow.")
     # The API allows supplying a value for end without one for start as well as
     # an end date earlier than start date, and returns default data (current
     # day UTC) in these cases. However, this is not really intuitive and should
@@ -90,9 +86,7 @@ def fetch_prices(
     if not start and end:
         raise click.BadOptionUsage("--end", "--end cannot be supplied without --start")
     if start and end and not (start < end):
-        raise click.BadParameter(
-            "--start not earlier than --end", param_hint=["--start", "--end"]
-        )
+        raise click.BadParameter("--start not earlier than --end", param_hint=["--start", "--end"])
 
     # fetch data
     if day:
@@ -102,9 +96,7 @@ def fetch_prices(
     elif year:
         items = _get_for_year(year.astimezone(tz.tzlocal()))
     elif today:
-        date = datetime.datetime.combine(
-            datetime.date.today(), datetime.time.min, tz.tzlocal()
-        )
+        date = datetime.datetime.combine(datetime.date.today(), datetime.time.min, tz.tzlocal())
         items = _get_for_day(date)
     elif tomorrow:
         date = datetime.date.today() + datetime.timedelta(1)
@@ -138,9 +130,7 @@ def fetch_prices(
 
 
 def _get_for_period(start: datetime.datetime, end: datetime.datetime):
-    return (
-        click.get_current_context().find_object(CliContext).client.request(start, end)
-    )
+    return click.get_current_context().find_object(CliContext).client.request(start, end)
 
 
 def _get_for_year(year: datetime.datetime):
@@ -157,7 +147,8 @@ def _get_for_month(month: datetime.datetime):
 def _get_for_day(day: datetime.datetime):
     return _get_for_period(day, day + datetime.timedelta(1))
 
+
 @cli.command
-def version():
+def version() -> None:
     """Show package version"""
-    click.echo('Version: ' + importlib.metadata.version('awattar'))
+    click.echo("Version: " + importlib.metadata.version("awattar"))

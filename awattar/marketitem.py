@@ -1,41 +1,39 @@
 import datetime
+from typing import TypeVar
+
 from dateutil import tz
 
-class MarketItem(object):
+T = TypeVar("T")
 
-    marketprice : float
 
-    def __init__(self,
-                 start_datetime : datetime,
-                 end_datetime : datetime,
-                 marketprice : float,
-                 unit : str
-                 ):
+class MarketItem:
+    marketprice: float
+
+    def __init__(
+        self,
+        start_datetime: datetime,
+        end_datetime: datetime,
+        marketprice: float,
+        unit: str,
+    ) -> None:
         """Construct a new aWATTarClient item object."""
 
-        self._start_datetime = start_datetime 
+        self._start_datetime = start_datetime
         self._end_datetime = end_datetime
         self._marketprice = float(marketprice)
         self._unit = unit
 
-    def to_json_dict(self):
-        return {
-                "start": self.start_datetime.isoformat(),
-                "end": self.end_datetime.isoformat(),
-                "price": self.marketprice,
-                "unit": self.unit,
-                "currency": self.currency,
-                "energy_unit": self.energy_unit,
-                "price_per_kWh": self.price_per_kWh
-            }
+    def to_json_dict(self) -> dict[str, any]:
+        return {"start": self.start_datetime.isoformat(), "end": self.end_datetime.isoformat(), "price": self.marketprice, "unit": self.unit, "currency": self.currency, "energy_unit": self.energy_unit, "price_per_kWh": self.price_per_kWh}
 
     @classmethod
-    def by_timestamp(cls,
-                 start_timestamp : datetime,
-                 end_timestamp : datetime,
-                 marketprice : float,
-                 unit : str
-                 ):
+    def by_timestamp(
+        cls: type[T],
+        start_timestamp: datetime,
+        end_timestamp: datetime,
+        marketprice: float,
+        unit: str,
+    ) -> T:
         """
         Create new instance with timestamp
 
@@ -44,38 +42,32 @@ class MarketItem(object):
         start_timestamp
             Start timestamp
         end_timestamp
-            End timestamp        
+            End timestamp
 
-        """  
+        """
 
-        return cls(
-            datetime.datetime.fromtimestamp(start_timestamp / 1000, datetime.timezone.utc),
-            datetime.datetime.fromtimestamp(end_timestamp / 1000, datetime.timezone.utc),
-            marketprice,
-            unit)
+        return cls(datetime.datetime.fromtimestamp(start_timestamp / 1000, datetime.timezone.utc), datetime.datetime.fromtimestamp(end_timestamp / 1000, datetime.timezone.utc), marketprice, unit)
 
     @property
-    def start_datetime(self):
-
-        #return in local timezone
-        return self._start_datetime.astimezone(tz.tzlocal()) 
-    
-    @property
-    def end_datetime(self):
-
-        #return in local timezone
-        return self._end_datetime.astimezone(tz.tzlocal()) 
+    def start_datetime(self) -> datetime:
+        # return in local timezone
+        return self._start_datetime.astimezone(tz.tzlocal())
 
     @property
-    def marketprice(self):
+    def end_datetime(self) -> datetime:
+        # return in local timezone
+        return self._end_datetime.astimezone(tz.tzlocal())
+
+    @property
+    def marketprice(self) -> float:
         return self._marketprice
 
     @property
-    def unit(self):
+    def unit(self) -> str:
         return self._unit
 
     @property
-    def price_per_kWh(self):
+    def price_per_kWh(self) -> float:
         try:
             return self._price_per_kWh
         except AttributeError:
@@ -84,7 +76,7 @@ class MarketItem(object):
         return self._price_per_kWh
 
     @property
-    def currency(self):
+    def currency(self) -> str:
         try:
             return self._currency
         except AttributeError:
@@ -92,7 +84,7 @@ class MarketItem(object):
         return self._currency
 
     @property
-    def energy_unit(self):
+    def energy_unit(self) -> str:
         try:
             return self._energy_unit
         except AttributeError:

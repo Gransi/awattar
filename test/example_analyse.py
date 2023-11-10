@@ -43,7 +43,7 @@ def main(argv: str) -> None:
     else:
         print(f"Best slot1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh")
 
-    best_slot = client.best_slot(1, datetime.datetime(2020, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2020, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+    best_slot = client.best_slot(1, datetime.datetime(2021, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2021, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
     if best_slot is None:
         print("No slot found")
     else:
