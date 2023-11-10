@@ -155,3 +155,7 @@ ignore = [
     "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
     "T201",
 ]
+
+[tool.ruff.lint.flake8-quotes]
+# Don't bother trying to avoid escapes.
+avoid-escape = false

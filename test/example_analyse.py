@@ -1,15 +1,15 @@
 import datetime
-import statistics
 import sys
 from datetime import timedelta
 
-import numpy
+from tzlocal import get_localzone
 
-sys.path.append("..")
 from awattar.client import AwattarClient
 
+sys.path.append("..")
 
-def main(argv):
+
+def main(argv: str) -> None:
     print("Connect to aWATTar")
     client = AwattarClient("AT")
 
@@ -43,13 +43,13 @@ def main(argv):
     else:
         print(f"Best slot1: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh")
 
-    best_slot = client.best_slot(1, datetime.datetime(2020, 10, 17, 12, 0, 0), datetime.datetime(2020, 10, 17, 18, 0, 0))
+    best_slot = client.best_slot(1, datetime.datetime(2020, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2020, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
     if best_slot is None:
         print("No slot found")
     else:
         print(f"Best slot2: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh")
 
-    starttime_slot = datetime.datetime.now()
+    starttime_slot = datetime.datetime.now(tz=get_localzone())
     starttime_slot = starttime_slot.replace(hour=12)
     endtime_slot = starttime_slot + timedelta(hours=6)
 
@@ -58,28 +58,6 @@ def main(argv):
         print("No slot found")
     else:
         print(f"Best slot3: {best_slot.start_datetime:%Y-%m-%d %H:%M:%S} - {best_slot.end_datetime:%Y-%m-%d %H:%M:%S} - {(best_slot.marketprice / 1000):.4f} EUR/kWh")
-
-    # print ('Get Market data from API')
-    # data = client.request()
-
-    # maxitem = max(data, key=lambda p: p.marketprice)
-
-    # print(f'Max: {maxitem.start_datetime:%Y-%m-%d %H:%M:%S} - {maxitem.end_datetime:%Y-%m-%d %H:%M:%S} - {(maxitem.marketprice / 1000):.4f} EUR/kWh')
-
-    # minitem = min(data, key=lambda p: p.marketprice)
-
-    # print(f'Min: {minitem.start_datetime:%Y-%m-%d %H:%M:%S} - {minitem.end_datetime:%Y-%m-%d %H:%M:%S} - {(minitem.marketprice / 1000):.4f} EUR/kWh')
-
-    # i_want_object_of_test = [test(test_obj.val.lower()) for test_obj in test_lst]
-    # attr=(data, key=lambda p: p.marketprice)
-    # print(vars(attr))
-    # medianitem = numpy.median(attr)
-
-    # print(f'Median: {medianitem} EUR/kWh')
-
-    # List of data
-    # for item in data:
-    #    print(f'{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh')
 
 
 if __name__ == "__main__":

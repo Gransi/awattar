@@ -3,7 +3,7 @@
 from .client import AwattarClient
 
 __all__ = [
-    'AwattarClient',
+    "AwattarClient",
 ]
 
-__version__ = '0.2.2'
+__version__ = "0.2.2"
