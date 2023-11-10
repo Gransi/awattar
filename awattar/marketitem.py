@@ -49,15 +49,10 @@ class MarketItem(object):
         """  
 
         return cls(
-            datetime.datetime.utcfromtimestamp(start_timestamp / 1000).replace(tzinfo=datetime.timezone.utc),
-            datetime.datetime.utcfromtimestamp(end_timestamp / 1000).replace(tzinfo=datetime.timezone.utc),
+            datetime.datetime.fromtimestamp(start_timestamp / 1000, datetime.timezone.utc),
+            datetime.datetime.fromtimestamp(end_timestamp / 1000, datetime.timezone.utc),
             marketprice,
             unit)
-
-        self._start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp / 1000).replace(tzinfo=datetime.timezone.utc) 
-        self._end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp / 1000).replace(tzinfo=datetime.timezone.utc) 
-        self._marketprice = marketprice
-        self._unit = unit     
 
     @property
     def start_datetime(self):
@@ -77,7 +72,7 @@ class MarketItem(object):
 
     @property
     def unit(self):
-        return self._unit;
+        return self._unit
 
     @property
     def price_per_kWh(self):
