@@ -1,5 +1,5 @@
 import datetime
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from dateutil import tz
 
@@ -7,12 +7,15 @@ T = TypeVar("T")
 
 
 class MarketItem:
-    marketprice: float
+    _marketprice: float
+    _currency: str
+    _energy_unit: str
+    _price_per_kWh: float
 
     def __init__(
         self,
-        start_datetime: datetime,
-        end_datetime: datetime,
+        start_datetime: datetime.datetime,
+        end_datetime: datetime.datetime,
         marketprice: float,
         unit: str,
     ) -> None:
@@ -23,14 +26,14 @@ class MarketItem:
         self._marketprice = float(marketprice)
         self._unit = unit
 
-    def to_json_dict(self) -> dict[str, any]:
+    def to_json_dict(self) -> dict[str, Any]:
         return {"start": self.start_datetime.isoformat(), "end": self.end_datetime.isoformat(), "price": self.marketprice, "unit": self.unit, "currency": self.currency, "energy_unit": self.energy_unit, "price_per_kWh": self.price_per_kWh}
 
     @classmethod
     def by_timestamp(
         cls: type[T],
-        start_timestamp: datetime,
-        end_timestamp: datetime,
+        start_timestamp: float,
+        end_timestamp: float,
         marketprice: float,
         unit: str,
     ) -> T:
@@ -46,15 +49,15 @@ class MarketItem:
 
         """
 
-        return cls(datetime.datetime.fromtimestamp(start_timestamp / 1000, datetime.timezone.utc), datetime.datetime.fromtimestamp(end_timestamp / 1000, datetime.timezone.utc), marketprice, unit)
+        return cls(datetime.datetime.fromtimestamp(start_timestamp / 1000.0, datetime.timezone.utc), datetime.datetime.fromtimestamp(end_timestamp / 1000.0, datetime.timezone.utc), marketprice, unit)
 
     @property
-    def start_datetime(self) -> datetime:
+    def start_datetime(self) -> datetime.datetime:
         # return in local timezone
         return self._start_datetime.astimezone(tz.tzlocal())
 
     @property
-    def end_datetime(self) -> datetime:
+    def end_datetime(self) -> datetime.datetime:
         # return in local timezone
         return self._end_datetime.astimezone(tz.tzlocal())
 
@@ -71,8 +74,8 @@ class MarketItem:
         try:
             return self._price_per_kWh
         except AttributeError:
-            assert self.energy_unit.startswith("M")
-            self._price_per_kWh = self.marketprice / 1000
+            if self.energy_unit.startswith("M"):
+                self._price_per_kWh = self.marketprice / 1000
         return self._price_per_kWh
 
     @property

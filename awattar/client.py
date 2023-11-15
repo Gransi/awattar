@@ -57,17 +57,17 @@ class AwattarClient:
             url = "https://api.awattar.de/v1/marketdata" + params
 
         # send request
-        req = requests.get(url)
+        req = requests.get(url, timeout=20)
 
         if req.status_code != requests.codes.ok:
-            return None
+            raise Exception(f"no data received, status code {req.status_code}")
 
         jsondata = req.json()
         self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
         return self._data
 
-    def min(self) -> MarketItem:
+    def __min__(self) -> MarketItem:
         """
         Get Market item with lowest price from last request
 
@@ -86,7 +86,7 @@ class AwattarClient:
 
         return min_item
 
-    def max(self) -> MarketItem:
+    def __max__(self) -> MarketItem:
         """
         Get Market item with highest price from last request
 
@@ -118,11 +118,10 @@ class AwattarClient:
         """
 
         mean_value = float((sum(a.marketprice for a in self._data)) / len(self._data))
-        item = MarketItem(self._data[0].start_datetime, self._data[len(self._data) - 1].end_datetime, mean_value, self._data[0].unit)
 
-        return item
+        return MarketItem(self._data[0].start_datetime, self._data[len(self._data) - 1].end_datetime, mean_value, self._data[0].unit)
 
-    def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> MarketItem:
+    def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> MarketItem | None:
         """
         Get the best slot.
 
@@ -156,7 +155,7 @@ class AwattarClient:
 
         datalenght = len(self._data) - (durationround - 1)
 
-        for i in range(0, datalenght):
+        for i in range(datalenght):
             item = self._data[i]
 
             if start_datetime is None or item.start_datetime >= start_datetime:
@@ -164,8 +163,8 @@ class AwattarClient:
                 if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround].end_datetime >= end_datetime:
                     break
 
-                sum_slot = 0
-                for x in range(0, durationround):
+                sum_slot = 0.0
+                for x in range(durationround):
                     sum_slot += self._data[i + x].marketprice
 
                 mean_slot_price = sum_slot / durationround
