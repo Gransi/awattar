@@ -1,10 +1,26 @@
 import datetime
 import math
-from typing import Optional
-
+import aiohttp
+import async_timeout
+import asyncio
+import socket
+from aiohttp.client import ClientError, ClientSession
+from typing import Optional, TYPE_CHECKING, Any, cast
+from typing_extensions import Self
 import requests
 
 from awattar.marketitem import MarketItem
+
+class AwattarError(Exception):
+    """Generic aWATTar exception."""
+
+
+class AwattarConnectionError(AwattarError):
+    """aWATTar - connection exception."""
+
+
+class AwattarNoDataError(AwattarError):
+    """aWATTar - no data exception."""
 
 
 class AwattarClient:
@@ -12,6 +28,35 @@ class AwattarClient:
         """Construct a new AwattarClient object."""
 
         self._country = country
+        self._data = []
+
+    def _make_url(self, start_time, end_time):
+        # set params
+        params = ""
+        if start_time is not None:
+            # remove microseconds
+            start_time = start_time.replace(microsecond=0)
+
+            params = "?start=" + str(int(start_time.timestamp())) + "000"
+
+            if end_time is not None:
+                # remove microseconds
+                end_time = end_time.replace(microsecond=0)
+
+                # set end timestamp
+                params = params + "&end=" + str(int(end_time.timestamp())) + "000"
+
+        # build url
+        if self._country == "AT":
+            url = "https://api.awattar.com/v1/marketdata" + params
+        elif self._country == "DE":
+            url = "https://api.awattar.de/v1/marketdata" + params
+
+
+        return url
+
+    def _set_data (self, jsondata):
+        self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
     def request(
         self,
@@ -35,35 +80,14 @@ class AwattarClient:
 
         """
 
-        # set params
-        params = ""
-        if start_time is not None:
-            # remove microseconds
-            start_time = start_time.replace(microsecond=0)
-
-            params = "?start=" + str(int(start_time.timestamp())) + "000"
-
-            if end_time is not None:
-                # remove microseconds
-                end_time = end_time.replace(microsecond=0)
-
-                # set end timestamp
-                params = params + "&end=" + str(int(end_time.timestamp())) + "000"
-
-        # build url
-        if self._country == "AT":
-            url = "https://api.awattar.com/v1/marketdata" + params
-        elif self._country == "DE":
-            url = "https://api.awattar.de/v1/marketdata" + params
-
         # send request
-        req = requests.get(url, timeout=20)
+        req = requests.get(self._make_url(start_time, end_time), timeout=20)
 
         if req.status_code != requests.codes.ok:
             raise Exception(f"no data received, status code {req.status_code}")
 
         jsondata = req.json()
-        self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
+        self._set_data(jsondata)
 
         return self._data
 
@@ -120,6 +144,27 @@ class AwattarClient:
         mean_value = float((sum(a.marketprice for a in self._data)) / len(self._data))
 
         return MarketItem(self._data[0].start_datetime, self._data[len(self._data) - 1].end_datetime, mean_value, self._data[0].unit)
+
+    def for_timestamp(self,
+                timestamp
+                ):
+        """Get MarketItem for given timestamp.
+
+        Parameters
+        ----------
+        timestamp : datetime
+            Timestamp must be between start_datetime and end_datetime of MarketItem
+
+        Returns
+        -------
+        MarketItem: The MarketItem for the given timestamp or None if not found
+        """
+
+        for item in self._data : 
+            if item.start_datetime <= timestamp < item.end_datetime : 
+                return item
+        
+        return None
 
     def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> MarketItem | None:
         """
@@ -207,3 +252,124 @@ class AwattarClient:
         endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
 
         return self.request(starttime, endtime)
+
+class AsyncAwattarClient(AwattarClient):
+    def __init__ (self, 
+                 country='AT',
+                 session=None
+                 ):
+        """Construct a new AsyncAwattarClient object."""
+        super ().__init__(country=country)
+        if session : 
+            self.session = session 
+            self._close_session = False
+        else : 
+            self.session = ClientSession()
+            self._close_session = True
+
+        self.request_timeout = 10
+
+    async def request(self,
+                start_time = None,
+                end_time = None
+                ):
+        """
+        Get Market data between start time and end time async
+
+        Parameters
+        ----------
+        start_time : datetime
+            Start time
+        end_time : datetime
+            End time            
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """                   
+
+        try:
+            async with async_timeout.timeout(self.request_timeout):
+                response = await self.session.get(self._make_url(start_time, end_time))
+                response.raise_for_status()
+        except asyncio.TimeoutError as exception:
+            msg = "Timeout occurred while connecting to the API."
+            raise AwattarConnectionError(
+                msg,
+            ) from exception
+        except (ClientError, socket.gaierror) as exception:
+            msg = "Error occurred while communicating with the API."
+            raise AwattarConnectionError(
+                msg,
+            ) from exception
+
+        content_type = response.headers.get("Content-Type", "")
+        if "application/json" not in content_type:
+            text = await response.text()
+            msg = "Unexpected content type response from the easyEnergy API"
+            raise AwattarError(
+                msg,
+                {"Content-Type": content_type, "response": text},
+            )
+
+        self._set_data(cast(dict[str, Any], await response.json()))
+        return self._data
+
+    async def today(self):
+        """
+        Get Market data for today
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=0, minute=0, second=0)
+        endtime = starttime.replace(hour=23, minute=0, second=0)
+
+        return await self.request(starttime, endtime)
+    
+    async def tomorrow(self):
+        """
+        Get Market data for tomorrow
+
+        Returns
+        -------
+        MarketItem:
+            Returns list of MarketItem
+
+        """
+
+        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = starttime.replace(hour=23, minute=00, second=00)
+        endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
+
+        return await self.request(starttime, endtime)
+
+    async def close(self) -> None:
+        """Close open client session."""
+        if self.session and self._close_session:
+            await self.session.close()
+
+    async def __aenter__(self) -> Self:
+        """Async enter.
+
+        Returns
+        -------
+            The EasyEnergy object.
+        """
+        return self
+
+    async def __aexit__(self, *_exc_info: object) -> None:
+        """Async exit.
+
+        Args:
+        ----
+            _exc_info: Exec type.
+        """
+        await self.close()
