@@ -34,7 +34,9 @@ dev = [
 ]
 test = [
     "tzlocal", 
-    "pytest"
+    "pytest",
+    "pytest-ruff",
+    "pytest-mypy",
 ]
 
 [project.scripts]
