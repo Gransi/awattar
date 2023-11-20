@@ -3,7 +3,7 @@ from typing import Any, TypeVar
 
 from dateutil import tz
 
-T = TypeVar("T")
+T = TypeVar("T", bound="MarketItem")
 
 
 class MarketItem:
@@ -48,7 +48,6 @@ class MarketItem:
             End timestamp
 
         """
-
         return cls(datetime.datetime.fromtimestamp(start_timestamp / 1000.0, datetime.timezone.utc), datetime.datetime.fromtimestamp(end_timestamp / 1000.0, datetime.timezone.utc), marketprice, unit)
 
     @property
