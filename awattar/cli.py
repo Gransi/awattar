@@ -61,7 +61,7 @@ def cli(ctx: click.core.Context, country: str) -> None:
 )
 @click.option("--today", is_flag=True, default=False, help="fetch today's (local time) prices")
 @click.option("--tomorrow", is_flag=True, default=False, help="fetch tomorrow's (local time) prices (will only work after they've been published at 12:55 GMT")
-@click.argument("FILE", type=click.File(mode="w"), default="-")
+@click.argument("FILE", type=click.File(mode="w"), default=sys.stdout)
 def fetch_prices(
     start: Optional[datetime.datetime],
     end: Optional[datetime.datetime],
