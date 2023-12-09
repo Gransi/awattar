@@ -67,7 +67,7 @@ class AwattarClient:
 
         return self._data
 
-    def __min__(self) -> MarketItem:
+    def min(self) -> MarketItem:
         """
         Get Market item with lowest price from last request
 
@@ -86,7 +86,7 @@ class AwattarClient:
 
         return min_item
 
-    def __max__(self) -> MarketItem:
+    def max(self) -> MarketItem:
         """
         Get Market item with highest price from last request
 
@@ -160,7 +160,7 @@ class AwattarClient:
 
             if start_datetime is None or item.start_datetime >= start_datetime:
                 # get end
-                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround].end_datetime >= end_datetime:
+                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround].end_datetime > end_datetime:
                     break
 
                 sum_slot = 0.0

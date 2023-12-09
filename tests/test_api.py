@@ -14,6 +14,28 @@ def test_basic_api_today() -> None:
     assert data[0].start_datetime == datetime.datetime.now(tz=datetime.timezone.utc).replace(hour=1, minute=0, second=0, microsecond=0, tzinfo=get_localzone())
 
 
+def test_basic_api_min_and_max() -> None:
+    client = AwattarClient("AT")
+    data = client.request(datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+
+    assert len(data) == 6
+    assert data[0].start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+
+    # get min slot
+    min_slot = client.min()
+    assert isinstance(min_slot, MarketItem)
+    assert min_slot.start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+    assert min_slot.end_datetime == datetime.datetime(2023, 10, 17, 13, 0, 0, tzinfo=get_localzone())
+    assert min_slot.marketprice == 110.93
+
+    # get max slot
+    min_slot = client.max()
+    assert isinstance(min_slot, MarketItem)
+    assert min_slot.start_datetime == datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone())
+    assert min_slot.end_datetime == datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone())
+    assert min_slot.marketprice == 164.9
+
+
 def test_basic_api_past() -> None:
     client = AwattarClient("AT")
     data = client.request(datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
@@ -28,7 +50,36 @@ def test_basic_api_past() -> None:
     # get best slot
     best_slot = client.best_slot(1, datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
     assert isinstance(best_slot, MarketItem)
-    assert best_slot.marketprice == 125.35
+    assert best_slot.start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 10, 17, 13, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 110.93
+
+    best_slot = client.best_slot(2, datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 10, 17, 14, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 112.59
+
+    best_slot = client.best_slot(3, datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 10, 17, 15, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 116.84333333333332
+
+    best_slot = client.best_slot(1, datetime.datetime(2023, 10, 17, 16, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 10, 17, 16, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 150
+
+    best_slot = client.best_slot(1, datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 164.9
+
+    best_slot = client.best_slot(1, datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 10, 17, 19, 0, 0, tzinfo=get_localzone()))
+    assert best_slot is None
 
 
 def test_basic_api_past2() -> None:
@@ -57,6 +108,13 @@ def test_basic_api_past2() -> None:
     assert data[6].price_per_kWh == 0.15925999999999998
     assert data[6].marketprice == 159.26
     assert data[6].unit == "Eur/MWh"
+
+    assert data[9].start_datetime == datetime.datetime(2023, 10, 17, 12, 0, 0, tzinfo=get_localzone())
+    assert data[9].end_datetime == datetime.datetime(2023, 10, 17, 13, 0, 0, tzinfo=get_localzone())
+    assert data[9].energy_unit == "MWh"
+    assert data[9].price_per_kWh == 0.11093
+    assert data[9].marketprice == 110.93
+    assert data[9].unit == "Eur/MWh"
 
     assert data[10].start_datetime == datetime.datetime(2023, 10, 17, 13, 0, 0, tzinfo=get_localzone())
     assert data[10].end_datetime == datetime.datetime(2023, 10, 17, 14, 0, 0, tzinfo=get_localzone())
