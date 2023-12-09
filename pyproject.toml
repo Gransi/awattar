@@ -30,13 +30,13 @@ dynamic = ["version"]
 
 [project.optional-dependencies] # Optional
 dev = [
-    "ruff"
+    "ruff>=0.1.5"
 ]
 test = [
     "tzlocal", 
-    "pytest",
-    "pytest-ruff",
-    "pytest-mypy",
+    "pytest>=7.1.3",
+    "pytest-ruff>=0.2.1",
+    "pytest-mypy>=0.10.3",
 ]
 
 [project.scripts]
