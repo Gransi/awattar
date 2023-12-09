@@ -16,6 +16,18 @@ def main(argv: str) -> None:
     for item in data:
         print(f"{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh")
 
+    print("Get Market data from API - today")
+    data = client.today()
+
+    for item in data:
+        print(f"{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh")
+
+    print("Get Market data from API - tomorrow")
+    data = client.tomorrow()
+
+    for item in data:
+        print(f"{item.start_datetime:%Y-%m-%d %H:%M:%S} - {item.end_datetime:%Y-%m-%d %H:%M:%S} - {(item.marketprice / 1000):.4f} EUR/kWh")
+
     print("Get Market data from 2020-05-17")
     data = client.request(datetime.datetime(2020, 5, 17, tzinfo=get_localzone()))
     for item in data:
