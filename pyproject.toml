@@ -25,7 +25,9 @@ dependencies = [
     "datetime", 
     "python-dateutil",
     "click>=8.1.7",
-    "aiohttp"
+    "aiohttp",
+    "async_timeout",
+    "tzlocal"
 ]
 dynamic = ["version"]
 
