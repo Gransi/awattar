@@ -36,7 +36,8 @@ dev = [
     "ruff>=0.1.5"
 ]
 test = [
-    "tzlocal", 
+    "types-requests",
+    "types-python-dateutil",
     "pytest>=7.1.3",
     "pytest-ruff>=0.2.1",
     "pytest-mypy>=0.10.3",
