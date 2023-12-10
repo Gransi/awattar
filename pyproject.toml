@@ -24,7 +24,8 @@ dependencies = [
     "requests", 
     "datetime", 
     "python-dateutil",
-    "click>=8.1.7"
+    "click>=8.1.7",
+    "aiohttp"
 ]
 dynamic = ["version"]
 
