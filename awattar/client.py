@@ -200,8 +200,9 @@ class AwattarClient:
             item = self._data[i]
 
             if start_datetime is None or item.start_datetime >= start_datetime:
+
                 # get end
-                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround].end_datetime > end_datetime:
+                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround- 1].end_datetime > end_datetime:
                     break
 
                 sum_slot = 0.0
