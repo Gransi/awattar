@@ -13,7 +13,7 @@ async def main(argv):
     client = AsyncAwattarClient("AT")
 
     print ("Get Market data from API")
-    data = await client.request()
+    data = await client.request()    
     print_data(data)    
 
     print ("Get Market data from API for today")
