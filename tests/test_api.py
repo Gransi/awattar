@@ -29,11 +29,48 @@ def test_basic_api_min_and_max() -> None:
     assert min_slot.marketprice == 110.93
 
     # get max slot
-    min_slot = client.max()
+    max_slot = client.max()
+    assert isinstance(max_slot, MarketItem)
+    assert max_slot.start_datetime == datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone())
+    assert max_slot.end_datetime == datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone())
+    assert max_slot.marketprice == 164.9
+
+
+def test_basic_api_min_and_max2() -> None:
+    client = AwattarClient("AT")
+    data = client.request(datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone()))
+
+    assert len(data) == 24
+    assert data[0].start_datetime == datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone())
+
+    # get min slot
+    min_slot = client.min()
     assert isinstance(min_slot, MarketItem)
-    assert min_slot.start_datetime == datetime.datetime(2023, 10, 17, 17, 0, 0, tzinfo=get_localzone())
-    assert min_slot.end_datetime == datetime.datetime(2023, 10, 17, 18, 0, 0, tzinfo=get_localzone())
-    assert min_slot.marketprice == 164.9
+    assert min_slot.start_datetime == datetime.datetime(2023, 8, 8, 2, 0, 0, tzinfo=get_localzone())
+    assert min_slot.end_datetime == datetime.datetime(2023, 8, 8, 3, 0, 0, tzinfo=get_localzone())
+    assert min_slot.marketprice == -18.59
+
+    # get max slot
+    max_slot = client.max()
+    assert isinstance(max_slot, MarketItem)
+    assert max_slot.start_datetime == datetime.datetime(2023, 8, 8, 21, 0, 0, tzinfo=get_localzone())
+    assert max_slot.end_datetime == datetime.datetime(2023, 8, 8, 22, 0, 0, tzinfo=get_localzone())
+    assert max_slot.marketprice == 89.18
+
+
+def test_basic_api_mean() -> None:
+    client = AwattarClient("AT")
+    data = client.request(datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone()))
+
+    assert len(data) == 24
+    assert data[0].start_datetime == datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone())
+
+    # get mean slot
+    mean_slot = client.mean()
+    assert isinstance(mean_slot, MarketItem)
+    assert mean_slot.start_datetime == datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone())
+    assert mean_slot.end_datetime == datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone())
+    assert mean_slot.marketprice == 17.729166666666668
 
 
 def test_basic_api_best_slot() -> None:
