@@ -174,11 +174,27 @@ def test_basic_api_best_slot2() -> None:
     assert best_slot.end_datetime == datetime.datetime(2023, 8, 8, 17, 0, 0, tzinfo=get_localzone())
     assert best_slot.marketprice == 0.09
 
-    # best_slot = client.best_slot(1, datetime.datetime(2023, 8, 8, 17, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone()))
-    # assert isinstance(best_slot, MarketItem)
-    # assert best_slot.start_datetime == datetime.datetime(2023, 8, 8, 17, 0, 0, tzinfo=get_localzone())
-    # assert best_slot.end_datetime == datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone())
-    # assert best_slot.marketprice == 164.9
+    best_slot = client.best_slot(1, datetime.datetime(2023, 8, 8, 17, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 8, 8, 17, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 11.7
 
     best_slot = client.best_slot(1, datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 8, 19, 0, 0, tzinfo=get_localzone()))
-    assert best_slot is None
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 8, 8, 18, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 8, 8, 19, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 34.61
+
+    best_slot = client.best_slot(1, datetime.datetime(2023, 8, 8, 23, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 8, 8, 23, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 59.98
+
+    best_slot = client.best_slot(24, datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone()), datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone()))
+    assert isinstance(best_slot, MarketItem)
+    assert best_slot.start_datetime == datetime.datetime(2023, 8, 8, 0, 0, 0, tzinfo=get_localzone())
+    assert best_slot.end_datetime == datetime.datetime(2023, 8, 9, 0, 0, 0, tzinfo=get_localzone())
+    assert best_slot.marketprice == 17.729166666666668
+    assert best_slot.price_per_kWh == 0.017729166666666667
