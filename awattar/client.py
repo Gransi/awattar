@@ -1,15 +1,17 @@
+import asyncio
 import datetime
 import math
+import socket
+from typing import TYPE_CHECKING, Any, Optional, cast
+
 import aiohttp
 import async_timeout
-import asyncio
-import socket
-from aiohttp.client import ClientError, ClientSession
-from typing import Optional, TYPE_CHECKING, Any, cast
-from typing_extensions import Self
 import requests
+from aiohttp.client import ClientError, ClientSession
+from typing_extensions import Self
 
 from awattar.marketitem import MarketItem
+
 
 class AwattarError(Exception):
     """Generic aWATTar exception."""
@@ -28,9 +30,8 @@ class AwattarClient:
         """Construct a new AwattarClient object."""
 
         self._country = country
-        self._data = []
 
-    def _make_url(self, start_time, end_time):
+    def _make_url(self, start_time: Optional[datetime.datetime] = None, end_time: Optional[datetime.datetime] = None) -> str:
         # set params
         params = ""
         if start_time is not None:
@@ -52,10 +53,9 @@ class AwattarClient:
         elif self._country == "DE":
             url = "https://api.awattar.de/v1/marketdata" + params
 
-
         return url
 
-    def _set_data (self, jsondata):
+    def _set_data(self, jsondata):
         self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
     def request(
@@ -145,9 +145,7 @@ class AwattarClient:
 
         return MarketItem(self._data[0].start_datetime, self._data[len(self._data) - 1].end_datetime, mean_value, self._data[0].unit)
 
-    def for_timestamp(self,
-                timestamp
-                ):
+    def for_timestamp(self, timestamp: datetime.datetime) -> MarketItem | None:
         """Get MarketItem for given timestamp.
 
         Parameters
@@ -160,10 +158,10 @@ class AwattarClient:
         MarketItem: The MarketItem for the given timestamp or None if not found
         """
 
-        for item in self._data : 
-            if item.start_datetime <= timestamp < item.end_datetime : 
+        for item in self._data:
+            if item.start_datetime <= timestamp < item.end_datetime:
                 return item
-        
+
         return None
 
     def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> MarketItem | None:
@@ -251,26 +249,21 @@ class AwattarClient:
 
         return self.request(starttime, endtime)
 
+
 class AsyncAwattarClient(AwattarClient):
-    def __init__ (self, 
-                 country='AT',
-                 session=None
-                 ):
+    def __init__(self, country: str = "AT", session=None):
         """Construct a new AsyncAwattarClient object."""
-        super ().__init__(country=country)
-        if session : 
-            self.session = session 
+        super().__init__(country=country)
+        if session:
+            self.session = session
             self._close_session = False
-        else : 
+        else:
             self.session = ClientSession()
             self._close_session = True
 
         self.request_timeout = 10
 
-    async def request(self,
-                start_time = None,
-                end_time = None
-                ):
+    async def request(self, start_time=None, end_time=None):
         """
         Get Market data between start time and end time async
 
@@ -279,14 +272,14 @@ class AsyncAwattarClient(AwattarClient):
         start_time : datetime
             Start time
         end_time : datetime
-            End time            
+            End time
 
         Returns
         -------
         MarketItem:
             Returns list of MarketItem
 
-        """                   
+        """
 
         try:
             async with async_timeout.timeout(self.request_timeout):
@@ -331,7 +324,7 @@ class AsyncAwattarClient(AwattarClient):
         endtime = starttime.replace(hour=23, minute=0, second=0)
 
         return await self.request(starttime, endtime)
-    
+
     async def tomorrow(self):
         """
         Get Market data for tomorrow
