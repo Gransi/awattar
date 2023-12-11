@@ -6,7 +6,7 @@ from tzlocal import get_localzone
 from awattar import AwattarClient
 
 
-def main(argv: str) -> None:
+def main(argv: list[str]) -> None:
     print("Connect to aWATTar")
     client = AwattarClient("AT")
 
