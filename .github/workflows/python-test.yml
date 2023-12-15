@@ -25,7 +25,6 @@ jobs:
       - name: Install test dependencies
         run: |
           pip install -e '.[test]'
-
       - name: Lint with Ruff  
         uses: chartboost/ruff-action@v1
         with:
