@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import math
 import socket
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Coroutine, Optional, cast
 
 import aiohttp
 import async_timeout
@@ -55,7 +55,7 @@ class AwattarClient:
 
         return url
 
-    def _set_data(self, jsondata):
+    def _set_data(self, jsondata) -> None:
         self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
     def request(
@@ -91,7 +91,7 @@ class AwattarClient:
 
         return self._data
 
-    def min(self) -> MarketItem:
+    def min(self) -> MarketItem:  # noqa: A003
         """
         Get Market item with lowest price from last request
 
@@ -110,7 +110,7 @@ class AwattarClient:
 
         return min_item
 
-    def max(self) -> MarketItem:
+    def max(self) -> MarketItem:  # noqa: A003
         """
         Get Market item with highest price from last request
 
@@ -200,9 +200,8 @@ class AwattarClient:
             item = self._data[i]
 
             if start_datetime is None or item.start_datetime >= start_datetime:
-
                 # get end
-                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround- 1].end_datetime > end_datetime:
+                if i < datalenght - 1 and end_datetime is not None and self._data[i + durationround - 1].end_datetime > end_datetime:
                     break
 
                 sum_slot = 0.0
@@ -252,7 +251,7 @@ class AwattarClient:
 
 
 class AsyncAwattarClient(AwattarClient):
-    def __init__(self, country: str = "AT", session=None):
+    def __init__(self, country: str = "AT", session: Optional[ClientSession] = None) -> None:
         """Construct a new AsyncAwattarClient object."""
         super().__init__(country=country)
         if session:
