@@ -36,6 +36,7 @@ dev = [
     "ruff>=0.1.5"
 ]
 test = [
+    "ruff>=0.1.5"
     "types-requests",
     "types-python-dateutil",
     "pytest>=7.1.3",
