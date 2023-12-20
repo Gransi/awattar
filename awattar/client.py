@@ -11,6 +11,7 @@ from aiohttp.client import ClientError, ClientSession
 from typing_extensions import Self
 
 from awattar.marketitem import MarketItem
+from tzlocal import get_localzone
 
 
 class AwattarError(Exception):
@@ -226,9 +227,9 @@ class AwattarClient:
 
         """
 
-        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
+        starttime = datetime.datetime.now(tz=get_localzone())
         starttime = starttime.replace(hour=0, minute=0, second=0)
-        endtime = starttime.replace(hour=23, minute=0, second=0)
+        endtime = starttime + datetime.timedelta(days=1)
 
         return self.request(starttime, endtime)
 
@@ -243,9 +244,9 @@ class AwattarClient:
 
         """
 
-        starttime = datetime.datetime.now(tz=datetime.timezone.utc)
-        starttime = starttime.replace(hour=23, minute=00, second=00)
-        endtime = starttime.replace(hour=23, minute=0, second=0) + datetime.timedelta(days=1)
+        starttime = datetime.datetime.now(tz=get_localzone())
+        starttime = starttime.replace(hour=0, minute=00, second=00) + datetime.timedelta(days=1)
+        endtime = starttime + datetime.timedelta(days=1)
 
         return self.request(starttime, endtime)
 

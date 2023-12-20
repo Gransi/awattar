@@ -13,10 +13,20 @@ def test_basic_api_today() -> None:
     client = AwattarClient("AT")
     data = client.today()
 
-    today_datetime = datetime.datetime.now(tz=datetime.timezone.utc)
+    today_datetime = datetime.datetime.now(tz=get_localzone())
 
-    assert len(data) == 23
-    assert_dates.assert_dates_equal(data[0].start_datetime, today_datetime.year, today_datetime.month, today_datetime.day, 1)
+    assert len(data) == 24
+    assert_dates.assert_dates_equal(data[0].start_datetime, today_datetime.year, today_datetime.month, today_datetime.day, 0)
+
+
+def test_basic_api_tomorrow() -> None:
+    client = AwattarClient("AT")
+    data = client.tomorrow()
+
+    tomorrow_datetime = datetime.datetime.now(tz=get_localzone()) + datetime.timedelta(days=1)
+
+    assert len(data) == 24
+    assert_dates.assert_dates_equal(data[0].start_datetime, tomorrow_datetime.year, tomorrow_datetime.month, tomorrow_datetime.day, 0)
 
 
 def test_basic_api_min_and_max() -> None:
