@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, TypeVar
+from typing import Any, Dict, TypeVar
 
 from dateutil import tz
 
@@ -26,7 +26,7 @@ class MarketItem:
         self._marketprice = float(marketprice)
         self._unit = unit
 
-    def to_json_dict(self) -> dict[str, Any]:
+    def to_json_dict(self) -> Dict[str, Any]:
         return {"start": self.start_datetime.isoformat(), "end": self.end_datetime.isoformat(), "price": self.marketprice, "unit": self.unit, "currency": self.currency, "energy_unit": self.energy_unit, "price_per_kWh": self.price_per_kWh}
 
     @classmethod
