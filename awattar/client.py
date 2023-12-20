@@ -9,9 +9,9 @@ import async_timeout
 import requests
 from aiohttp.client import ClientError, ClientSession
 from typing_extensions import Self
+from tzlocal import get_localzone
 
 from awattar.marketitem import MarketItem
-from tzlocal import get_localzone
 
 
 class AwattarError(Exception):
