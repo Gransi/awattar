@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, Type, TypeVar
 
 from dateutil import tz
 
@@ -31,7 +31,7 @@ class MarketItem:
 
     @classmethod
     def by_timestamp(
-        cls: type[T],
+        cls: Type[T],
         start_timestamp: float,
         end_timestamp: float,
         marketprice: float,
