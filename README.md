@@ -6,7 +6,7 @@
 $ pip install awattar
 ```
 
-This package is tested with Python 3.10 
+This package is tested with Python 3.9, 3.10, 3.11
 
 ## Command line
 
