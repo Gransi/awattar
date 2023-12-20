@@ -13,8 +13,10 @@ def test_basic_api_today() -> None:
     client = AwattarClient("AT")
     data = client.today()
 
+    today_datetime = datetime.datetime.now(tz=datetime.timezone.utc)
+
     assert len(data) == 23
-    assert data[0].start_datetime == datetime.datetime.now(tz=datetime.timezone.utc).replace(hour=1, minute=0, second=0, microsecond=0, tzinfo=get_localzone())
+    assert_dates.assert_dates_equal(data[0].start_datetime, today_datetime.year, today_datetime.month, today_datetime.day, 1)
 
 
 def test_basic_api_min_and_max() -> None:
