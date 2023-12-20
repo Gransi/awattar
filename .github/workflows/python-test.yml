@@ -5,6 +5,8 @@ on: [push]
 jobs:  
   build:  
     runs-on: ubuntu-latest  
+    env:
+      TZ: Europe/Vienna
     strategy:  
       matrix:  
         python-version: ["3.9", "3.10", "3.11"]
