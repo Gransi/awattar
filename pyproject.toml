@@ -21,7 +21,7 @@ classifiers = [
 keywords = ["awattar", "energy market price api"]
 requires-python = ">=3.8"
 dependencies = [
-    "requests", 
+    "requests>=2.31.0", 
     "datetime", 
     "python-dateutil",
     "click>=8.1.7",
