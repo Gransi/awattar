@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import math
 import socket
-from typing import TYPE_CHECKING, Any, Coroutine, Optional, cast
+from typing import TYPE_CHECKING, Any, Coroutine, Optional, Union, cast
 
 import aiohttp
 import async_timeout
@@ -146,7 +146,7 @@ class AwattarClient:
 
         return MarketItem(self._data[0].start_datetime, self._data[len(self._data) - 1].end_datetime, mean_value, self._data[0].unit)
 
-    def for_timestamp(self, timestamp: datetime.datetime) -> MarketItem | None:
+    def for_timestamp(self, timestamp: datetime.datetime) -> Union[MarketItem, None]:
         """Get MarketItem for given timestamp.
 
         Parameters
@@ -165,7 +165,7 @@ class AwattarClient:
 
         return None
 
-    def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> MarketItem | None:
+    def best_slot(self, duration: int, start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> Union[MarketItem, None]:
         """
         Get the best slot.
 

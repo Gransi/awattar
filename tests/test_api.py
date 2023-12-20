@@ -1,6 +1,6 @@
 import datetime  # noqa: INP001
 
-from assert_datey_equal import AssertDatesEqual
+from assert_dates_equal import AssertDatesEqual
 from tzlocal import get_localzone
 
 from awattar.client import AwattarClient
