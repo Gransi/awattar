@@ -4,6 +4,7 @@ on: [push]
   
 jobs:  
   build:  
+    timeout-minutes: 20
     runs-on: ubuntu-latest  
     env:
       TZ: Europe/Vienna
