@@ -56,7 +56,7 @@ class AwattarClient:
 
         return url
 
-    def _set_data(self, jsondata) -> None:
+    def _set_data(self, jsondata: Any) -> None:
         self._data = [MarketItem.by_timestamp(**k) for k in jsondata["data"]]
 
     def request(
